@@ -1,9 +1,20 @@
 package base;
 
+import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * 
+ * @author bittor
+ *
+ */
 public class Principal {
+	
+	
 	private static final Logger LOGGER = Logger.getLogger(Principal.class.getName());
 
 	private static Scanner teclado = new Scanner(System.in);
@@ -11,7 +22,8 @@ public class Principal {
 	private static boolean permiso = false;
 	
 	private static boolean compuertasVerificadas = false;
-
+	
+	
 	public static void main(String[] args) {
 
 		System.out.println(
@@ -20,7 +32,22 @@ public class Principal {
 		int nivel = leerNivelAgua();
 
 		mostrarMenu(nivel);
-
+		
+		Handler fileHandler = null;
+		
+		try {
+			
+			fileHandler = new FileHandler("./selecciones.log");
+			
+			LOGGER.addHandler(fileHandler);
+			
+			LOGGER.setLevel(Level.ALL);
+			fileHandler.setLevel(Level.ALL);
+			
+			
+		}catch(IOException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage());
+		}
 	}
 
 	private static void mostrarMenu(int nivel) {
@@ -41,11 +68,13 @@ public class Principal {
 			opcion = teclado.nextInt();
 			switch (opcion) {
 			case 1:
+				LOGGER.log(Level.FINE, "Opcion 1");
 				nivel = leerNivelAgua();
 				permiso = false;
 				compuertasVerificadas = false;
-				break;
+				break;	
 			case 2:
+				LOGGER.log(Level.FINE, "Opcion 2");
 				if(abrirCompuertas()) {
 					System.out.println();
 					System.out.print("�Compuertas abiertas!");
@@ -55,6 +84,7 @@ public class Principal {
 				}
 				break;
 			case 3:
+				LOGGER.log(Level.FINE, "Opcion 3");
 				permiso = solicitarPermiso(nivel);
 				if(!permiso) {
 					System.out.println();
@@ -62,6 +92,7 @@ public class Principal {
 				}
 				break;	
 			case 4:
+				LOGGER.log(Level.FINE, "Opcion 4");
 				compuertasVerificadas = verificarCompuertas();
 				if(compuertasVerificadas) {
 					System.out.println();
@@ -87,7 +118,14 @@ public class Principal {
 		}
 	}
 	
-	static boolean solicitarPermiso(int nivel) {
+	/**
+	 * Controla dar el permiso en base al nivel de agua
+	 * 
+	 * @author bittor
+	 * @param nivel tipo int
+	 * @return Devuelve true si el nivel es mayor de 50, sino devuelve false
+	 */
+	public static boolean solicitarPermiso(int nivel) {
 		if (nivel > 50) {
 			return true;
 		}else {
